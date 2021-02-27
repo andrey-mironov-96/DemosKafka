@@ -20,7 +20,7 @@ namespace Kafka.Consumer.Service
                 BootstrapServers = "localhost:9092",
                 AutoOffsetReset = AutoOffsetReset.Earliest,
                 AllowAutoCreateTopics = true,
-                EnableAutoCommit = false
+                EnableAutoCommit = true
             };
         }
         public Task StartAsync(CancellationToken cancellationToken)

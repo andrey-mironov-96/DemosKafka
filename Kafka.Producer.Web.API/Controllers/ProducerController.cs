@@ -2,6 +2,7 @@
 using Kafka.Core.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -17,10 +18,12 @@ namespace Kafka.Producer.Web.API.Controllers
     public class ProducerController : ControllerBase
     {
         private readonly ProducerConfig config;
+        private readonly ILogger logger;
         private readonly string[] names;
-        public ProducerController(ProducerConfig config)
+        public ProducerController(ProducerConfig config, ILogger<ProducerController> logger)
         {
             this.config = config;
+            this.logger = logger;
             this.names = new[] { "Иван", "Анастасия", "Андрей", "Дмитрий", "Ольга", "Татьяна", "Михаил", "Ян" };
         }
 
@@ -34,13 +37,17 @@ namespace Kafka.Producer.Web.API.Controllers
             {
                 while (true)
                 {
+                    string key = Guid.NewGuid().ToString();
+                    string value = GenerateEmployee();
+
                     await producer.ProduceAsync(nameTopic, new Message<string, string>
                     {
-                        Key = Guid.NewGuid().ToString(),
-                        Value = GenerateEmployee()
+                        Key = key,
+                        Value = value
                     });
+                    logger.LogInformation($"send to kafka key: {key} and value: {value}");
                     producer.Flush(TimeSpan.FromMilliseconds(5));
-                    Thread.Sleep(1000);
+                    Thread.Sleep(500);
                 }
             }
 
