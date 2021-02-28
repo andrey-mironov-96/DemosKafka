@@ -16,7 +16,7 @@ namespace Kafka.Consumer.Service
             Host.CreateDefaultBuilder(args)
                 .ConfigureServices((context, colletions) =>
                 {
-                    colletions.AddHostedService<ConsumerService>();
+                   colletions.AddHostedService<ConsumerService>();
                 });
 
     }

@@ -1,10 +1,12 @@
 ﻿using Confluent.Kafka;
+using Kafka.Core.Models;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Kafka.Consumer.Service
 {
@@ -20,7 +22,7 @@ namespace Kafka.Consumer.Service
                 BootstrapServers = "localhost:9092",
                 AutoOffsetReset = AutoOffsetReset.Earliest,
                 AllowAutoCreateTopics = true,
-                EnableAutoCommit = true
+                EnableAutoCommit = false
             };
         }
         public Task StartAsync(CancellationToken cancellationToken)
@@ -31,7 +33,9 @@ namespace Kafka.Consumer.Service
             while (true)
             {
                 ConsumeResult<string, string> result = consumer.Consume(cancellationToken);
+                Employee employee = JsonConvert.DeserializeObject<Employee>(result.Message.Value);
                 Console.WriteLine(result.Message.Value);
+                consumer.Commit();
             }
         }
 
